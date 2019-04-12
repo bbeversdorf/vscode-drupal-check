@@ -202,7 +202,7 @@ function sendStartValidationNotification(document: TextDocument): void {
  */
 function sendEndValidationNotification(document: TextDocument): void {
 	validating.delete(document.uri);
-	const end = "textDocument/didEndValidate"
+	const end = strings.format(SR.DidEndValidateTextDocument, )
 	connection.sendNotification(end,
 		{ textDocument: TextDocumentIdentifier.create(document.uri) }
 	);

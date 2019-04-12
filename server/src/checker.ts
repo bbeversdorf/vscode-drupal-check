@@ -35,10 +35,9 @@ export class DrupalCheck {
 	static async create(executablePath: string): Promise<DrupalCheck> {
 		try {
 			return new DrupalCheck(executablePath);
-
 		} catch (error) {
-			let message = error.message ? error.message : SR.CreateLinterErrorDefaultMessage;
-			throw new Error(strings.format(SR.CreateLinterError, message));
+			let message = error.message ? error.message : SR.CreateCheckerErrorDefaultMessage;
+			throw new Error(strings.format(SR.CreateCheckerError, message));
 		}
 	}
 
@@ -65,6 +64,7 @@ export class DrupalCheck {
 
 		// Process linting arguments.
 		let lintArgs = ['--format=json'];
+		lintArgs.push('--no-progress');
 		lintArgs.push(filePath);
 
 		let text = fileText;
@@ -78,22 +78,28 @@ export class DrupalCheck {
 			input: text,
 		};
 
-		const drupalchecker = spawn.sync(this.executablePath, lintArgs, options);
-		const stdout = drupalchecker.stdout.toString().trim();
-		const stderr = drupalchecker.stderr.toString().trim();
-		let match = null;
+		let stdout: string;
+		let stderr: string;
+		try {
+			const drupalchecker = spawn.sync(this.executablePath, lintArgs, options);
+			stdout = drupalchecker.stdout.toString().trim();
+			stderr = drupalchecker.stderr.toString().trim();
+		} catch (error) {
+			throw new Error(SR.CreateCheckerError);
+		}
 
 		// Determine whether we have an error in stderr.
-		// if (stderr !== '') {
-		// 	if (match = stderr.match(/^(?:PHP\s?)FATAL\s?ERROR:\s?(.*)/i)) {
-		// 		let error = match[1].trim();
-		// 		if (match = error.match(/^Uncaught exception '.*' with message '(.*)'/)) {
-		// 			throw new Error(match[1]);
-		// 		}
-		// 		throw new Error(error);
-		// 	}
-		// 	throw new Error(strings.format(SR.UnknownExecutionError, `${this.executablePath} ${lintArgs.join(' ')}`));
-		// }
+		let match: (RegExpMatchArray | null);
+		if (stderr !== '') {
+			if (match = stderr.match(/^(?:PHP\s?)FATAL\s?ERROR:\s?(.*)/i)) {
+				let error = match[1].trim();
+				if (match = error.match(/^Uncaught exception '.*' with message '(.*)'/)) {
+					throw new Error(match[1]);
+				}
+				throw new Error(error);
+			}
+			throw new Error(strings.format(SR.UnknownExecutionError, `${this.executablePath} ${lintArgs.join(' ')}`));
+		}
 
 		const data = this.parseData(stdout);
 
@@ -123,6 +129,10 @@ export class DrupalCheck {
 	}
 
 	private createDiagnostic(document: TextDocument, entry: DrupalCheckMessage): Diagnostic {
+		if (entry == null || entry.message == '') {
+			const range: Range = Range.create(0, 0, 0, 0);
+			return Diagnostic.create(range, '', DiagnosticSeverity.Information, null, 'drupalchecker');
+		}
 
 		let lines = document.getText().split("\n");
 		let line = entry.line - 1;
