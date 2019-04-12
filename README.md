@@ -2,7 +2,8 @@
 
 ## Functionality
 This Visual Studio Code extension highlights deprecated Drupal code.
-![](https://github.com/bbeversdorf/vscode-drupal-check/blob/master/images/icon.png)
+
+![](https://github.com/bbeversdorf/vscode-drupal-check/blob/master/images/sample.png)
 
 It relies on [drupal-check](https://github.com/mglaman/drupal-check)
 
