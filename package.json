@@ -1,0 +1,63 @@
+{
+	"name": "drupal-check",
+	"description": "A check for Drupal deprecations",
+	"author": "Brian Beversdorf",
+	"license": "MIT",
+	"version": "0.0.1",
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/bbeversdorf/vscode-drupal-check"
+	},
+	"icon": "images/icon.png",
+	"publisher": "bbeversdorf",
+	"categories": [],
+	"keywords": [
+		"drupal"
+	],
+	"engines": {
+		"vscode": "^1.23.0"
+	},
+	"activationEvents": [
+		"onLanguage:php"
+	],
+	"main": "./client/out/extension",
+	"contributes": {
+		"configuration": {
+			"type": "object",
+			"title": "Drupal Checker",
+			"properties": {
+				"drupalCheck.enable": {
+					"scope": "window",
+					"type": "boolean",
+					"default": true,
+					"description": "Enable"
+				},
+				"drupalCheck.executablePath": {
+					"scope": "window",
+					"type": "string",
+					"default": "/usr/local/bin/drupal-check",
+					"description": "The path to drupal-check."
+				},
+				"drupalCheck.maxNumberOfProblems": {
+					"scope": "resource",
+					"type": "number",
+					"default": 1000,
+					"description": "Controls the maximum number of problems produced by the server."
+				}
+			}
+		}
+	},
+	"scripts": {
+		"vscode:prepublish": "cd client && npm run update-vscode && cd .. && npm run compile",
+		"compile": "tsc -b",
+		"watch": "tsc -b -w",
+		"postinstall": "cd client && npm install && cd ../server && npm install && cd ..",
+		"test": "sh ./scripts/e2e.sh"
+	},
+	"devDependencies": {
+		"@types/mocha": "^5.2.0",
+		"@types/node": "^8.0.0",
+		"tslint": "^5.11.0",
+		"typescript": "^3.1.3"
+	}
+}
