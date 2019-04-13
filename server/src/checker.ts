@@ -4,7 +4,7 @@
  * ------------------------------------------------------------------------------------------ */
 "use strict";
 import * as path from "path";
-import * as spawn from "cross-spawn";
+import * as spawn from "cross-spawn-promise";
 import * as strings from "./base/common/strings";
 import * as extfs from "./base/node/extfs";
 import CharCode from "./base/common/charcode";
@@ -78,30 +78,24 @@ export class DrupalCheck {
 			input: text,
 		};
 
-		let stdout: string;
-		let stderr: string;
-		try {
-			const drupalchecker = spawn.sync(this.executablePath, lintArgs, options);
-			stdout = drupalchecker.stdout.toString().trim();
-			stderr = drupalchecker.stderr.toString().trim();
-		} catch (error) {
-			throw new Error(SR.CreateCheckerError);
-		}
 
-		// Determine whether we have an error in stderr.
-		let match: (RegExpMatchArray | null);
-		if (stderr !== '') {
-			if (match = stderr.match(/^(?:PHP\s?)FATAL\s?ERROR:\s?(.*)/i)) {
-				let error = match[1].trim();
-				if (match = error.match(/^Uncaught exception '.*' with message '(.*)'/)) {
-					throw new Error(match[1]);
+		return spawn(this.executablePath, lintArgs, options)
+			.then((stdout) => {
+				console.info('Success!');
+				return this.processResults(filePath, document, stdout);
+			})
+			.catch((error) => {
+				console.error('Issues found.');
+				if (error && error.stdout) {
+					return this.processResults(filePath, document, error.stdout);
+				} else {
+					console.error(error.stderr)
 				}
-				throw new Error(error);
-			}
-			throw new Error(strings.format(SR.UnknownExecutionError, `${this.executablePath} ${lintArgs.join(' ')}`));
-		}
+		});
+	}
 
-		const data = this.parseData(stdout);
+	private processResults(filePath: string, document: TextDocument, results: any): Diagnostic[] {
+		const data = this.parseData(results);
 
 		let messages: Array<DrupalCheckMessage>;
 		if (filePath !== undefined) {

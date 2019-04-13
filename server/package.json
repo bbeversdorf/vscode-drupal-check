@@ -12,8 +12,8 @@
 		"url": "https://github.com/bbeversdorf/vscode-drupal-check"
 	},
 	"dependencies": {
-		"vscode-languageserver": "^4.1.3",
-		"cross-spawn": "^6.0.4"
+		"cross-spawn-promise": "^0.10.1",
+		"vscode-languageserver": "^4.1.3"
 	},
 	"scripts": {}
 }

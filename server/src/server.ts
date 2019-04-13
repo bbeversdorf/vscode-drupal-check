@@ -131,12 +131,6 @@ documents.onDidClose(e => {
 	documentSettings.delete(e.document.uri);
 });
 
-// The content of a text document has changed. This event is emitted
-// when the text document first opened or when its content has changed.
-documents.onDidChangeContent(e => {
-	validateSingle(e.document);
-});
-
 documents.onDidSave(e => {
 	validateSingle(e.document);
 });
@@ -148,7 +142,6 @@ documents.onDidSave(e => {
  * @return void
  */
 async function validateSingle(document: TextDocument): Promise<void> {
-	const { uri } = document;
 	let settings = await getDocumentSettings(document.uri);
 	if (settings.enable) {
 		let diagnostics: Diagnostic[] = [];
@@ -202,7 +195,7 @@ function sendStartValidationNotification(document: TextDocument): void {
  */
 function sendEndValidationNotification(document: TextDocument): void {
 	validating.delete(document.uri);
-	const end = strings.format(SR.DidEndValidateTextDocument, )
+	const end = "textDocument/didEndValidate";
 	connection.sendNotification(end,
 		{ textDocument: TextDocumentIdentifier.create(document.uri) }
 	);

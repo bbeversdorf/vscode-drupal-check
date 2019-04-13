@@ -12,14 +12,21 @@ import {
 	ServerOptions,
 	TransportKind
 } from 'vscode-languageclient';
+import { print } from 'util';
 
 let client: LanguageClient;
 
 export function activate(context: ExtensionContext) {
 	// The server is implemented in node
-	let serverModule = context.asAbsolutePath(
-		path.join('server', 'out', 'server.js')
-	);
+	let serverModule: string;
+	try {
+		serverModule = context.asAbsolutePath(
+			path.join('server', 'out', 'server.js')
+		);
+	} catch (error) {
+		print(error);
+	}
+
 	// The debug options for the server
 	// --inspect=6009: runs the server in Node's Inspector mode so VS Code can attach to the server for debugging
 	let debugOptions = { execArgv: ['--nolazy', '--inspect=6009'] };
@@ -52,9 +59,14 @@ export function activate(context: ExtensionContext) {
 		serverOptions,
 		clientOptions
 	);
+	client.registerProposedFeatures();
 
 	// Start the client. This will also launch the server
-	client.start();
+	try {
+		client.start();
+	} catch(error) {
+		client.stop();
+	}
 }
 
 export function deactivate(): Thenable<void> | undefined {
