@@ -4,15 +4,17 @@
  * ------------------------------------------------------------------------------------------ */
 
 import * as path from 'path';
-import { workspace, ExtensionContext } from 'vscode';
+import {
+	workspace,
+	ExtensionContext,
+} from 'vscode';
 
 import {
 	LanguageClient,
 	LanguageClientOptions,
 	ServerOptions,
-	TransportKind
+	TransportKind,
 } from 'vscode-languageclient';
-import { print } from 'util';
 
 let client: LanguageClient;
 
@@ -24,7 +26,7 @@ export function activate(context: ExtensionContext) {
 			path.join('server', 'out', 'server.js')
 		);
 	} catch (error) {
-		print(error);
+		console.error(error);
 	}
 
 	// The debug options for the server
@@ -49,7 +51,7 @@ export function activate(context: ExtensionContext) {
 		synchronize: {
 			// Notify the server about file changes to '.clientrc files contained in the workspace
 			fileEvents: workspace.createFileSystemWatcher('**/.clientrc')
-		},
+		}
 	};
 
 	// Create the language client and start the client.

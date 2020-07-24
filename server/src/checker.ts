@@ -85,10 +85,11 @@ export class DrupalCheck {
 				return this.processResults(filePath, document, stdout);
 			})
 			.catch((error) => {
-				console.error('Issues found.');
 				if (error && error.stdout) {
+					console.error('Issues found.');
 					return this.processResults(filePath, document, error.stdout);
-				} else {
+				} else if (error.stderr) {
+					console.error('Issues found.');
 					console.error(error.stderr)
 				}
 		});
@@ -97,7 +98,7 @@ export class DrupalCheck {
 	private processResults(filePath: string, document: TextDocument, results: any): Diagnostic[] {
 		const data = this.parseData(results);
 
-		let messages: Array<DrupalCheckMessage>;
+		let messages: Array<DrupalCheckMessage> = [];
 		if (filePath !== undefined) {
 			const fileRealPath = extfs.realpathSync(filePath);
 			if (!data.files[fileRealPath]) {
@@ -110,7 +111,6 @@ export class DrupalCheck {
 		messages.map(message => diagnostics.push(
 			this.createDiagnostic(document, message)
 		));
-
 		return diagnostics;
 	}
 

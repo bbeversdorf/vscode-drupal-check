@@ -14,7 +14,9 @@ import {
 	TextDocuments,
 	TextDocument,
 	TextDocumentIdentifier,
-	ProposedFeatures
+	ProposedFeatures,
+	IPCMessageReader,
+	IPCMessageWriter
 } from 'vscode-languageserver';
 
 import { DrupalCheck } from "./checker";
@@ -23,7 +25,7 @@ import { StringResources as SR } from "./strings";
 
 // Create a connection for the server. The connection uses Node's IPC as a transport.
 // Also include all preview / proposed LSP features.
-let connection = createConnection(ProposedFeatures.all);
+let connection = createConnection(ProposedFeatures.all, new IPCMessageReader(process), new IPCMessageWriter(process));
 
 // Create a simple text document manager. The text document manager
 // supports full document sync only
@@ -48,10 +50,10 @@ connection.onInitialize((params: InitializeParams) => {
 	return {
 		capabilities: {
 			textDocumentSync: documents.syncKind,
-			// Tell the client that the server supports code completion
-			completionProvider: {
-				resolveProvider: true
-			}
+			// // Tell the client that the server supports code completion
+			// completionProvider: {
+			// 	resolveProvider: true
+			// }
 		}
 	};
 });
@@ -105,7 +107,8 @@ function getDocumentSettings(resource: string): Thenable<CheckerSettings> {
 	if (!hasConfigurationCapability) {
 		return Promise.resolve(globalSettings);
 	}
-	let result = documentSettings.get(resource);
+	let result: Thenable<CheckerSettings>;
+	result = documentSettings.get(resource);
 	if (!result) {
 		result = connection.workspace.getConfiguration({
 			scopeUri: resource,

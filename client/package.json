@@ -3,7 +3,7 @@
 	"description": "VSCode extension client to check Drupal deprecations",
 	"author": "Brian Beversdorf",
 	"license": "MIT",
-	"version": "0.0.3",
+	"version": "0.0.4",
 	"publisher": "vscode",
 	"repository": {
 		"type": "git",
@@ -20,6 +20,6 @@
 		"vscode-languageclient": "^4.1.4"
 	},
 	"devDependencies": {
-		"vscode": "^1.1.33"
+		"vscode": "^1.1.37"
 	}
 }
