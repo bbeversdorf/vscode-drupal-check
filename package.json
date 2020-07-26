@@ -52,12 +52,16 @@
 		"compile": "tsc -b",
 		"watch": "tsc -b -w",
 		"postinstall": "cd client && npm install && cd ../server && npm install && cd ..",
-		"test": "sh ./scripts/e2e.sh"
+		"test": "sh ./scripts/e2e.sh",
+		"lint": "eslint . --ext .ts"
 	},
 	"devDependencies": {
 		"@types/mocha": "^5.2.7",
 		"@types/node": "^12.12.52",
+		"@typescript-eslint/eslint-plugin": "^3.7.0",
+		"@typescript-eslint/parser": "^3.7.0",
 		"diff": "^4.0.2",
+		"eslint": "^7.5.0",
 		"tslint": "^5.20.1",
 		"typescript": "^3.9.7"
 	}
