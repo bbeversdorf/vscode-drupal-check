@@ -13,10 +13,16 @@ It relies on [drupal-check](https://github.com/mglaman/drupal-check)
 Before installing the extension ensure [drupal-check](https://github.com/mglaman/drupal-check) is installed.
 
 ```bash
-curl -O -L https://github.com/mglaman/drupal-check/releases/latest/download/drupal-check.phar
-mv drupal-check.phar /usr/local/bin/drupal-check
-chmod +x /usr/local/bin/drupal-check
+composer global require mglaman/drupal-check
 ```
+
+In [Visual Studio Code](https://code.visualstudio.com/) settings, find the **Drupal Check: Executable Path** setting, and configure it to point to the `drupal-check` executable from your global Composer installation. For example:
+
+```
+/path/to/.composer/vendor/mglaman/drupal-check/drupal-check
+```
+
+_Note: Run `composer global show -P` to get a list global packages and their paths._
 
 ## Development Version
 
